@@ -1,0 +1,1486 @@
+by tiokadams
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>English Grammar Challenge</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #eef2f7;
+    color: #222;
+}
+
+.container {
+    max-width: 760px;
+    margin: 35px auto;
+    padding: 15px;
+}
+
+.card {
+    background: white;
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.10);
+}
+
+h1 {
+    text-align: center;
+    margin-top: 0;
+}
+
+.setup {
+    display: grid;
+    gap: 18px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+select,
+input {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    border: 0;
+    border-radius: 10px;
+    background: #2563eb;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: .9;
+}
+
+.hidden {
+    display: none;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.timer {
+    text-align: center;
+    font-size: 27px;
+    font-weight: bold;
+    padding: 12px;
+    border-radius: 12px;
+    background: #f1f3f5;
+    margin-bottom: 18px;
+}
+
+.progress {
+    width: 100%;
+    height: 9px;
+    background: #ddd;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #2563eb;
+    transition: width .3s;
+}
+
+.question-number {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.question {
+    font-size: 23px;
+    line-height: 1.5;
+    font-weight: bold;
+    padding: 25px 5px;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+
+.options {
+    display: grid;
+    gap: 12px;
+}
+
+.option {
+    padding: 15px;
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 17px;
+    transition: .15s;
+    user-select: none;
+}
+
+.option:hover {
+    background: #f5f7fa;
+}
+
+.option.selected {
+    border-color: #2563eb;
+    background: #eef4ff;
+}
+
+.option.correct {
+    border-color: #198754;
+    background: #e8f7ee;
+}
+
+.option.wrong {
+    border-color: #dc3545;
+    background: #fdeaea;
+}
+
+.next-btn {
+    margin-top: 20px;
+}
+
+.result {
+    text-align: center;
+}
+
+.score {
+    font-size: 48px;
+    font-weight: bold;
+    margin: 15px 0;
+}
+
+.grade {
+    font-size: 22px;
+    margin-bottom: 25px;
+}
+
+.warning {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 13px;
+    color: #777;
+}
+
+@media(max-width:600px) {
+    .card {
+        padding: 20px;
+    }
+
+    .question {
+        font-size: 20px;
+    }
+
+    .option {
+        font-size: 16px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- ================= SETUP ================= -->
+
+<div class="card" id="setup">
+
+<h1>📚 English Grammar Challenge</h1>
+
+<div class="setup">
+
+<div>
+<label for="level">Grammar Level</label>
+
+<select id="level">
+
+<option value="basic">
+Level 1 — Basic
+</option>
+
+<option value="intermediate">
+Level 2 — Intermediate
+</option>
+
+<option value="advanced">
+Level 3 — Advanced
+</option>
+
+<option value="expert">
+Level 4 — Expert
+</option>
+
+</select>
+</div>
+
+
+<div>
+<label for="questionCount">
+Number of Questions
+</label>
+
+<input
+type="number"
+id="questionCount"
+value="20"
+min="5"
+max="100"
+>
+</div>
+
+
+<div>
+<label>
+Generated Duration
+</label>
+
+<input
+id="durationPreview"
+readonly
+>
+</div>
+
+
+<button onclick="startTest()">
+Start Grammar Test
+</button>
+
+</div>
+
+</div>
+
+
+<!-- ================= QUIZ ================= -->
+
+<div class="card hidden" id="quiz">
+
+<div class="topbar">
+
+<span id="progressText">
+Question 1 / 20
+</span>
+
+<span id="scoreText">
+Score: 0
+</span>
+
+</div>
+
+
+<div class="timer">
+⏱ <span id="timer">00:00</span>
+</div>
+
+
+<div class="progress">
+<div
+class="progress-bar"
+id="progressBar">
+</div>
+</div>
+
+
+<div
+class="question-number"
+id="questionNumber">
+Question 1
+</div>
+
+
+<div
+class="question"
+id="question">
+Question
+</div>
+
+
+<div
+class="options"
+id="options">
+</div>
+
+
+<button
+class="next-btn"
+id="nextButton"
+onclick="nextQuestion()"
+>
+Next Question
+</button>
+
+
+<div class="warning">
+Questions are protected against normal text selection,
+copying and right-clicking.
+</div>
+
+</div>
+
+
+<!-- ================= RESULT ================= -->
+
+<div class="card hidden" id="result">
+
+<div class="result">
+
+<h1>🏆 Test Complete</h1>
+
+<div class="score" id="finalScore">
+0%
+</div>
+
+<div class="grade" id="grade">
+</div>
+
+<p id="summary"></p>
+
+<br>
+
+<button onclick="location.reload()">
+Take Another Test
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   QUESTION BANK
+===================================================== */
+
+const questionBank = {
+
+basic: [
+
+{
+q: "She ___ to school every day.",
+o: ["go", "goes", "going", "gone"],
+a: 1
+},
+
+{
+q: "They ___ watching television now.",
+o: ["is", "are", "was", "be"],
+a: 1
+},
+
+{
+q: "I ___ a student.",
+o: ["am", "is", "are", "be"],
+a: 0
+},
+
+{
+q: "He ___ coffee every morning.",
+o: ["drink", "drinks", "drinking", "drank"],
+a: 1
+},
+
+{
+q: "We ___ at home yesterday.",
+o: ["are", "is", "were", "be"],
+a: 2
+},
+
+{
+q: "There ___ a book on the table.",
+o: ["are", "is", "were", "be"],
+a: 1
+},
+
+{
+q: "There ___ three apples in the basket.",
+o: ["is", "are", "was", "be"],
+a: 1
+},
+
+{
+q: "She has ___ orange.",
+o: ["a", "an", "the", "no article"],
+a: 1
+},
+
+{
+q: "I saw ___ dog in the garden.",
+o: ["a", "an", "are", "some"],
+a: 0
+},
+
+{
+q: "This is ___ best movie I have seen.",
+o: ["a", "an", "the", "some"],
+a: 2
+},
+
+{
+q: "Tom and I are friends. ___ often play football.",
+o: ["They", "We", "Us", "Them"],
+a: 1
+},
+
+{
+q: "This book belongs to Sarah. It is ___.",
+o: ["her", "hers", "she", "herself"],
+a: 1
+},
+
+{
+q: "My brother is ___ than me.",
+o: ["tall", "taller", "tallest", "more tall"],
+a: 1
+},
+
+{
+q: "The children ___ in the park every Sunday.",
+o: ["play", "plays", "playing", "played"],
+a: 0
+},
+
+{
+q: "I ___ breakfast at 7 a.m. yesterday.",
+o: ["eat", "eats", "ate", "eating"],
+a: 2
+},
+
+{
+q: "She ___ English very well.",
+o: ["speak", "speaks", "speaking", "spoken"],
+a: 1
+},
+
+{
+q: "We ___ any money.",
+o: ["don't have", "doesn't have", "not have", "hasn't"],
+a: 0
+},
+
+{
+q: "He ___ like spicy food.",
+o: ["don't", "doesn't", "isn't", "not"],
+a: 1
+},
+
+{
+q: "___ you like pizza?",
+o: ["Are", "Does", "Do", "Is"],
+a: 2
+},
+
+{
+q: "My parents ___ doctors.",
+o: ["is", "am", "are", "be"],
+a: 2
+}
+
+],
+
+
+/* =====================================================
+   INTERMEDIATE
+===================================================== */
+
+intermediate: [
+
+{
+q: "I ___ this book three times.",
+o: ["read", "have read", "am reading", "was reading"],
+a: 1
+},
+
+{
+q: "She ___ dinner when I called her.",
+o: ["cooks", "cooked", "was cooking", "has cooked"],
+a: 2
+},
+
+{
+q: "By the time we arrived, the movie ___.",
+o: ["started", "has started", "had started", "starts"],
+a: 2
+},
+
+{
+q: "If it rains tomorrow, we ___ at home.",
+o: ["stay", "stayed", "will stay", "would stay"],
+a: 2
+},
+
+{
+q: "You ___ wear a seatbelt while driving.",
+o: ["should", "could", "might", "would"],
+a: 0
+},
+
+{
+q: "He is interested ___ learning Japanese.",
+o: ["on", "at", "in", "for"],
+a: 2
+},
+
+{
+q: "She is good ___ mathematics.",
+o: ["in", "at", "on", "for"],
+a: 1
+},
+
+{
+q: "I have lived here ___ 2019.",
+o: ["for", "since", "during", "from"],
+a: 1
+},
+
+{
+q: "They have been married ___ ten years.",
+o: ["since", "during", "for", "from"],
+a: 2
+},
+
+{
+q: "This is the restaurant ___ we had dinner.",
+o: ["who", "where", "which", "whose"],
+a: 1
+},
+
+{
+q: "The woman ___ lives next door is a doctor.",
+o: ["which", "where", "who", "whose"],
+a: 2
+},
+
+{
+q: "This is the man ___ car was stolen.",
+o: ["who", "which", "whose", "where"],
+a: 2
+},
+
+{
+q: "The homework ___ by the students yesterday.",
+o: ["completed", "was completed", "is completing", "has complete"],
+a: 1
+},
+
+{
+q: "She said that she ___ tired.",
+o: ["is", "was", "will", "has"],
+a: 1
+},
+
+{
+q: "I wish I ___ more time.",
+o: ["have", "had", "will have", "having"],
+a: 1
+},
+
+{
+q: "He has ___ finished his work.",
+o: ["already", "yet", "still", "ever"],
+a: 0
+},
+
+{
+q: "Have you ___ been to London?",
+o: ["ever", "already", "still", "yet"],
+a: 0
+},
+
+{
+q: "She hasn't arrived ___.",
+o: ["already", "ever", "yet", "still"],
+a: 2
+},
+
+{
+q: "You should apologize ___ him.",
+o: ["to", "at", "on", "for"],
+a: 0
+},
+
+{
+q: "I am looking forward ___ you.",
+o: ["see", "to see", "to seeing", "seeing to"],
+a: 2
+}
+
+],
+
+
+/* =====================================================
+   ADVANCED
+===================================================== */
+
+advanced: [
+
+{
+q: "If I ___ you, I would accept the offer.",
+o: ["am", "was", "were", "be"],
+a: 2
+},
+
+{
+q: "If she had studied harder, she ___ the exam.",
+o: ["passes", "would pass", "would have passed", "will pass"],
+a: 2
+},
+
+{
+q: "By next year, they ___ here for ten years.",
+o: ["will live", "will have lived", "live", "have lived"],
+a: 1
+},
+
+{
+q: "The report ___ before the meeting began.",
+o: ["had been completed", "has completed", "was completing", "completes"],
+a: 0
+},
+
+{
+q: "Hardly ___ the room when the phone rang.",
+o: ["I had entered", "had I entered", "I entered", "entered I"],
+a: 1
+},
+
+{
+q: "Not only ___ late, but he also forgot the documents.",
+o: ["he was", "was he", "he is", "is he"],
+a: 1
+},
+
+{
+q: "No sooner had she arrived ___ it started raining.",
+o: ["when", "than", "then", "that"],
+a: 1
+},
+
+{
+q: "I would rather you ___ tomorrow.",
+o: ["come", "came", "will come", "coming"],
+a: 1
+},
+
+{
+q: "It is essential that every student ___ on time.",
+o: ["is", "be", "was", "will be"],
+a: 1
+},
+
+{
+q: "The manager demanded that he ___ immediately.",
+o: ["leaves", "left", "leave", "leaving"],
+a: 2
+},
+
+{
+q: "She denied ___ the money.",
+o: ["steal", "to steal", "stealing", "stole"],
+a: 2
+},
+
+{
+q: "He admitted ___ the mistake.",
+o: ["make", "to make", "making", "made"],
+a: 2
+},
+
+{
+q: "The book, ___ was published last year, became a bestseller.",
+o: ["that", "which", "what", "where"],
+a: 1
+},
+
+{
+q: "He is the person ___ I told you about.",
+o: ["which", "whose", "whom", "where"],
+a: 2
+},
+
+{
+q: "Despite ___ tired, she continued working.",
+o: ["be", "being", "was", "been"],
+a: 1
+},
+
+{
+q: "He succeeded ___ working extremely hard.",
+o: ["because", "although", "by", "despite"],
+a: 2
+},
+
+{
+q: "She speaks English as if she ___ a native speaker.",
+o: ["is", "were", "was", "has been"],
+a: 1
+},
+
+{
+q: "If only I ___ about the problem earlier.",
+o: ["know", "knew", "had known", "have known"],
+a: 2
+},
+
+{
+q: "The project needs ___ before publication.",
+o: ["to revise", "revising", "revised", "revise"],
+a: 1
+},
+
+{
+q: "He is believed ___ abroad.",
+o: ["live", "to live", "living", "lived"],
+a: 1
+}
+
+],
+
+
+/* =====================================================
+   EXPERT
+===================================================== */
+
+expert: [
+
+{
+q: "Had I known about the problem, I ___ differently.",
+o: ["would act", "would have acted", "will act", "acted"],
+a: 1
+},
+
+{
+q: "Were the company ___ its policy, many problems could be avoided.",
+o: ["change", "to change", "changed", "changing"],
+a: 1
+},
+
+{
+q: "Little ___ that his decision would change everything.",
+o: ["he knew", "did he know", "he knows", "knows he"],
+a: 1
+},
+
+{
+q: "Under no circumstances ___ this door be opened.",
+o: ["should", "would", "could", "might"],
+a: 0
+},
+
+{
+q: "Scarcely had he finished speaking ___ the audience began to applaud.",
+o: ["than", "when", "then", "that"],
+a: 1
+},
+
+{
+q: "It was not until midnight ___ they finally reached the village.",
+o: ["when", "which", "that", "where"],
+a: 2
+},
+
+{
+q: "What he said ___ completely irrelevant.",
+o: ["were", "are", "was", "have been"],
+a: 2
+},
+
+{
+q: "Neither the manager nor the employees ___ aware of the change.",
+o: ["was", "were", "is", "has"],
+a: 1
+},
+
+{
+q: "Neither the employees nor the manager ___ aware of the change.",
+o: ["were", "are", "was", "have"],
+a: 2
+},
+
+{
+q: "The number of applicants ___ increased significantly.",
+o: ["have", "are", "has", "were"],
+a: 2
+},
+
+{
+q: "A number of applicants ___ already withdrawn.",
+o: ["has", "have", "is", "was"],
+a: 1
+},
+
+{
+q: "He would have succeeded if he ___ more carefully.",
+o: ["worked", "had worked", "would work", "has worked"],
+a: 1
+},
+
+{
+q: "She talks as though she ___ everything.",
+o: ["knows", "knew", "had known", "knowing"],
+a: 1
+},
+
+{
+q: "It is high time we ___ the issue.",
+o: ["address", "addressed", "will address", "have addressed"],
+a: 1
+},
+
+{
+q: "I would sooner resign than ___ such an agreement.",
+o: ["accept", "accepted", "accepting", "to accept"],
+a: 0
+},
+
+{
+q: "The evidence suggests that he ___ the truth.",
+o: ["did not know", "does not knew", "had not know", "not knowing"],
+a: 0
+},
+
+{
+q: "Rarely ___ such a remarkable performance.",
+o: ["we see", "do we see", "we saw", "saw we"],
+a: 1
+},
+
+{
+q: "Only after the investigation ___ the truth become clear.",
+o: ["did", "was", "has", "had"],
+a: 0
+},
+
+{
+q: "So difficult ___ the examination that many students complained.",
+o: ["was", "were", "is", "be"],
+a: 0
+},
+
+{
+q: "Were it not for your assistance, I ___ unable to finish.",
+o: ["am", "would be", "will be", "was"],
+a: 1
+}
+
+]
+
+};
+
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let questions = [];
+let currentQuestion = 0;
+let score = 0;
+let selectedAnswer = null;
+
+let timerInterval;
+let remainingSeconds;
+
+
+/* =====================================================
+   SHUFFLE
+===================================================== */
+
+function shuffle(array) {
+
+    let arr = [...array];
+
+    for(let i = arr.length - 1; i > 0; i--) {
+
+        const j =
+            Math.floor(Math.random() * (i + 1));
+
+        [arr[i], arr[j]] =
+        [arr[j], arr[i]];
+    }
+
+    return arr;
+}
+
+
+/* =====================================================
+   DURATION
+===================================================== */
+
+function secondsPerQuestion(level) {
+
+    if(level === "basic")
+        return 25;
+
+    if(level === "intermediate")
+        return 40;
+
+    if(level === "advanced")
+        return 60;
+
+    if(level === "expert")
+        return 90;
+
+    return 40;
+}
+
+
+function formatTime(seconds) {
+
+    const min =
+        Math.floor(seconds / 60);
+
+    const sec =
+        seconds % 60;
+
+    return String(min).padStart(2,"0")
+        + ":" +
+        String(sec).padStart(2,"0");
+}
+
+
+function updateDurationPreview() {
+
+    const level =
+        document.getElementById("level").value;
+
+    let count =
+        parseInt(
+            document.getElementById("questionCount").value
+        ) || 1;
+
+    const seconds =
+        count * secondsPerQuestion(level);
+
+    document.getElementById("durationPreview").value =
+        formatTime(seconds);
+}
+
+
+document
+.getElementById("level")
+.addEventListener(
+    "change",
+    updateDurationPreview
+);
+
+document
+.getElementById("questionCount")
+.addEventListener(
+    "input",
+    updateDurationPreview
+);
+
+updateDurationPreview();
+
+
+/* =====================================================
+   START TEST
+===================================================== */
+
+function startTest() {
+
+    const level =
+        document.getElementById("level").value;
+
+    let count =
+        parseInt(
+            document.getElementById("questionCount").value
+        );
+
+    if(count < 5)
+        count = 5;
+
+    const bank =
+        questionBank[level];
+
+    /*
+       If requested number is larger than the
+       available bank, recycle randomized questions.
+    */
+
+    questions = [];
+
+    while(questions.length < count) {
+
+        questions =
+            questions.concat(
+                shuffle(bank)
+            );
+    }
+
+    questions =
+        questions.slice(0, count);
+
+
+    currentQuestion = 0;
+    score = 0;
+    selectedAnswer = null;
+
+
+    remainingSeconds =
+        count * secondsPerQuestion(level);
+
+
+    document
+        .getElementById("setup")
+        .classList.add("hidden");
+
+    document
+        .getElementById("quiz")
+        .classList.remove("hidden");
+
+
+    showQuestion();
+    startTimer();
+}
+
+
+/* =====================================================
+   SHOW QUESTION
+===================================================== */
+
+function showQuestion() {
+
+    selectedAnswer = null;
+
+    const q =
+        questions[currentQuestion];
+
+
+    document
+        .getElementById("questionNumber")
+        .textContent =
+        "Question " +
+        (currentQuestion + 1);
+
+
+    document
+        .getElementById("progressText")
+        .textContent =
+        `Question ${currentQuestion + 1} / ${questions.length}`;
+
+
+    document
+        .getElementById("scoreText")
+        .textContent =
+        `Score: ${score}`;
+
+
+    document
+        .getElementById("question")
+        .textContent =
+        q.q;
+
+
+    const options =
+        document.getElementById("options");
+
+    options.innerHTML = "";
+
+
+    q.o.forEach((option, index) => {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "option";
+
+        div.textContent =
+            String.fromCharCode(65 + index)
+            + ". "
+            + option;
+
+
+        div.onclick = function() {
+
+            selectAnswer(index, div);
+
+        };
+
+
+        options.appendChild(div);
+
+    });
+
+
+    document
+        .getElementById("nextButton")
+        .textContent =
+        currentQuestion === questions.length - 1
+        ? "Finish Test"
+        : "Next Question";
+
+
+    const percent =
+        (currentQuestion / questions.length) * 100;
+
+    document
+        .getElementById("progressBar")
+        .style.width =
+        percent + "%";
+}
+
+
+/* =====================================================
+   SELECT ANSWER
+===================================================== */
+
+function selectAnswer(index, element) {
+
+    selectedAnswer = index;
+
+    document
+        .querySelectorAll(".option")
+        .forEach(el => {
+            el.classList.remove("selected");
+        });
+
+    element.classList.add("selected");
+}
+
+
+/* =====================================================
+   NEXT QUESTION
+===================================================== */
+
+function nextQuestion() {
+
+    if(selectedAnswer === null) {
+
+        alert("Please select an answer.");
+
+        return;
+    }
+
+
+    if(
+        selectedAnswer ===
+        questions[currentQuestion].a
+    ) {
+
+        score++;
+
+    }
+
+
+    currentQuestion++;
+
+
+    if(currentQuestion >= questions.length) {
+
+        finishTest();
+
+    } else {
+
+        showQuestion();
+
+    }
+}
+
+
+/* =====================================================
+   TIMER
+===================================================== */
+
+function startTimer() {
+
+    clearInterval(timerInterval);
+
+    updateTimer();
+
+
+    timerInterval =
+        setInterval(() => {
+
+            remainingSeconds--;
+
+            updateTimer();
+
+
+            if(remainingSeconds <= 0) {
+
+                clearInterval(timerInterval);
+
+                finishTest();
+
+            }
+
+        }, 1000);
+}
+
+
+function updateTimer() {
+
+    const timer =
+        document.getElementById("timer");
+
+    timer.textContent =
+        formatTime(remainingSeconds);
+
+
+    if(remainingSeconds <= 30) {
+
+        timer.style.fontWeight = "bold";
+
+    }
+}
+
+
+/* =====================================================
+   FINISH
+===================================================== */
+
+function finishTest() {
+
+    clearInterval(timerInterval);
+
+
+    document
+        .getElementById("quiz")
+        .classList.add("hidden");
+
+
+    document
+        .getElementById("result")
+        .classList.remove("hidden");
+
+
+    const percentage =
+        Math.round(
+            (score / questions.length) * 100
+        );
+
+
+    document
+        .getElementById("finalScore")
+        .textContent =
+        percentage + "%";
+
+
+    let grade;
+
+
+    if(percentage >= 90)
+        grade = "Excellent 🏆";
+
+    else if(percentage >= 80)
+        grade = "Very Good 🎯";
+
+    else if(percentage >= 70)
+        grade = "Good 👍";
+
+    else if(percentage >= 60)
+        grade = "Keep Practicing 📚";
+
+    else
+        grade = "Needs Improvement 💪";
+
+
+    document
+        .getElementById("grade")
+        .textContent =
+        grade;
+
+
+    document
+        .getElementById("summary")
+        .textContent =
+        `You answered ${score} out of ${questions.length} questions correctly.`;
+}
+
+
+/* =====================================================
+   ANTI-COPY PROTECTION
+===================================================== */
+
+/*
+   Important:
+   Browser JavaScript cannot completely prevent
+   screenshots. These controls only make ordinary
+   copying more difficult.
+*/
+
+
+document.addEventListener(
+    "contextmenu",
+    e => e.preventDefault()
+);
+
+
+document.addEventListener(
+    "copy",
+    e => e.preventDefault()
+);
+
+
+document.addEventListener(
+    "cut",
+    e => e.preventDefault()
+);
+
+
+document.addEventListener(
+    "dragstart",
+    e => e.preventDefault()
+);
+
+
+document.addEventListener(
+    "selectstart",
+    e => e.preventDefault()
+);
+
+
+/* Keyboard protection */
+
+document.addEventListener(
+    "keydown",
+    function(e) {
+
+        const key =
+            e.key.toLowerCase();
+
+
+        /* Copy */
+
+        if(e.ctrlKey && key === "c")
+            e.preventDefault();
+
+
+        /* Cut */
+
+        if(e.ctrlKey && key === "x")
+            e.preventDefault();
+
+
+        /* Save */
+
+        if(e.ctrlKey && key === "s")
+            e.preventDefault();
+
+
+        /* View source */
+
+        if(e.ctrlKey && key === "u")
+            e.preventDefault();
+
+
+        /* Print */
+
+        if(e.ctrlKey && key === "p")
+            e.preventDefault();
+
+
+        /* Developer tools */
+
+        if(
+            e.key === "F12" ||
+            (e.ctrlKey &&
+             e.shiftKey &&
+             ["i","j","c"].includes(key))
+        ) {
+
+            e.preventDefault();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   HIDE QUESTION WHEN TAB IS LEFT
+===================================================== */
+
+document.addEventListener(
+    "visibilitychange",
+    function() {
+
+        const question =
+            document.getElementById("question");
+
+        const options =
+            document.getElementById("options");
+
+
+        if(document.hidden) {
+
+            question.textContent =
+                "⚠ QUESTION HIDDEN";
+
+            question.style.filter =
+                "blur(15px)";
+
+            options.style.filter =
+                "blur(15px)";
+
+        } else {
+
+            question.style.filter =
+                "none";
+
+            options.style.filter =
+                "none";
+
+
+            if(
+                questions.length &&
+                currentQuestion < questions.length
+            ) {
+
+                question.textContent =
+                    questions[currentQuestion].q;
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   PREVENT PRINTING
+===================================================== */
+
+window.addEventListener(
+    "beforeprint",
+    function() {
+
+        document.body.innerHTML =
+            "<h1 style='text-align:center'>Printing is disabled.</h1>";
+
+    }
+);
+
+</script>
+
+</body>
+</html>
